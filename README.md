@@ -1,3 +1,3 @@
 <!-- Plugin description -->
-This plugin adds support for using Pest PHP inside PhpStorm.
+This plugin adds debugging tool window for Trap inside PhpStorm.
 <!-- Plugin description end -->

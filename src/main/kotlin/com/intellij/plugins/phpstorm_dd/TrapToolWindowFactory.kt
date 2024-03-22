@@ -12,6 +12,8 @@ class TrapToolWindowFactory : ToolWindowFactory {
                 vertical = false,
                 borderless = true
             )
+        val trapServerService = project.getService(TrapServerService::class.java)
+        trapServerService.webview = trapToolWindowPanel.webview
         val contentFactory = ContentFactory.SERVICE.getInstance()
         val content = contentFactory.createContent(trapToolWindowPanel, "", false)
         toolWindow.contentManager.addContent(content)

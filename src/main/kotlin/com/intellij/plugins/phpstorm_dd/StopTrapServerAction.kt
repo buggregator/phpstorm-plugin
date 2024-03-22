@@ -7,24 +7,26 @@ import com.intellij.notification.Notifications
 import com.intellij.openapi.actionSystem.ActionUpdateThread
 import com.intellij.openapi.actionSystem.AnAction
 import com.intellij.openapi.actionSystem.AnActionEvent
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.launch
 
 
-class StopTrapServerAction : AnAction("Stop Server", "", AllIcons.Actions.Suspend) {
+class StopTrapServerAction()
+    : AnAction("Stop Server", "", AllIcons.Actions.Suspend) {
 
     override fun actionPerformed(event: AnActionEvent) {
-        notifyProxyShutdown()
+        event.presentation.isEnabled = false
+//        notifyProxyShutdown()
         val trapServerService = event.project!!.getService(TrapServerService::class.java)
-        GlobalScope.launch {
-            trapServerService.stopTrapServer()
-        }
-        
+        trapServerService.stopTrapServer()
     }
 
     override fun update(event: AnActionEvent) {
         val trapServerService = event.project!!.getService(TrapServerService::class.java)
-        event.presentation.isEnabled = trapServerService.trapDaemon?.isActive !== null && trapServerService.trapDaemon?.isActive == true
+        val oldValue = event.presentation.isEnabled
+        event.presentation.isEnabled = trapServerService.trapDaemon !== null && trapServerService.trapDaemon?.isAlive == true
+        
+        if (oldValue != event.presentation.isEnabled) {
+            trapServerService.statusChanged()
+        }
     }
 
     private fun notifyProxyShutdown() {

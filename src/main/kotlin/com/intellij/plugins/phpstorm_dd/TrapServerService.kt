@@ -1,33 +1,34 @@
 package com.intellij.plugins.phpstorm_dd
 
 import com.intellij.openapi.Disposable
-import com.intellij.openapi.components.ServiceManager
-import com.intellij.openapi.externalSystem.service.ui.completion.collector.TextCompletionCollector.Companion.async
 import com.intellij.openapi.project.Project
-import com.intellij.platform.ijent.IjentProcessWatcher.Companion.launch
+import com.intellij.ui.jcef.JBCefBrowser
 import java.io.File
 import com.jetbrains.php.config.interpreters.PhpInterpreter
-import com.jetbrains.rd.generator.nova.PredefinedType
 import kotlinx.coroutines.*
+import kotlinx.coroutines.channels.Channel
 import java.io.InputStream
-import java.util.concurrent.TimeUnit
 
 class TrapServerService(
     private var project: Project?
 ) : Disposable {
 
-    var trapDaemon: Job? = null
+    var webview: JBCefBrowser? = null
+    var trapDaemon: Process? = null
 
     override fun dispose() {
         if (trapDaemon != null) {
-            trapDaemon!!.cancel()
+            trapDaemon!!.destroy()
             trapDaemon = null
         }
     }
-    
-    fun startTrapServer(interpreter: PhpInterpreter) {
+
+//    private var processChannel: Channel<Process?>? = null
+    private var processChannel = Channel<Process?>()
+
+    suspend fun startTrapServer(interpreter: PhpInterpreter) {
         
-        if (trapDaemon?.isActive == true) {
+        if (trapDaemon?.isAlive == true) {
             return
         }
         
@@ -35,48 +36,54 @@ class TrapServerService(
         val cmdMap = cmdString.split(" ")
         val workingDir = File(project?.basePath!!)
         
-//        trapDaemon = ProcessBuilder(cmdMap)
-//            .directory(workingDir)
-//            .redirectOutput(ProcessBuilder.Redirect.INHERIT)
-//            .redirectError(ProcessBuilder.Redirect.INHERIT)
-//            .start()
-
-
-        trapDaemon = CoroutineScope(Dispatchers.IO).launch {
+        CoroutineScope(Dispatchers.IO).launch {
             executeCommand(cmdMap, workingDir)
         }
+
+        trapDaemon = processChannel.receive()
         
         println("here")
     }
 
-    suspend fun stopTrapServer() {
+    fun stopTrapServer() {
 
-        if (trapDaemon == null || !trapDaemon!!.isActive) {
+        if (trapDaemon == null || !trapDaemon!!.isAlive) {
             return
         }
-        
-        trapDaemon!!.cancel()
-        trapDaemon!!.join()
+
+        trapDaemon?.destroy()
+    }
+    
+    fun statusChanged() {
+        if (trapDaemon == null || !trapDaemon!!.isAlive) {
+            webview?.loadHTML("Not Running");
+        } else {
+            webview?.loadURL("http://127.0.0.1:8000")
+        }
     }
 
     private suspend fun executeCommand(commandArgs: List<String>, workingDir: File): CoroutineScope = withContext(
         Dispatchers.IO
     ) {
+        var process: Process? = null
         runCatching {
-            val process = ProcessBuilder(commandArgs)
+            process = ProcessBuilder(commandArgs)
                 .directory(workingDir)
+                .redirectOutput(ProcessBuilder.Redirect.INHERIT)
+                .redirectError(ProcessBuilder.Redirect.INHERIT)
                 .start()
+
+            processChannel.send(process)
+            
             val outputStream = async {
-                println("Context for output stream -> $coroutineContext -> Thread -> ${Thread.currentThread()}")
-                readStream(process.inputStream) }
+                readStream(process!!.inputStream) }
             val errorStream = async {
-                println("Context for error stream -> $coroutineContext -> Thread -> ${Thread.currentThread()}")
-                readStream(process.errorStream)
+                readStream(process!!.errorStream)
             }
-            println("Context for exit code -> $coroutineContext -> Thread -> ${Thread.currentThread()}")
-            val exitCode =  process.waitFor()
+            val exitCode =  process?.waitFor()
+
             ProcessResult(
-                exitCode = exitCode,
+                exitCode = exitCode!!,
                 message = outputStream.await(),
                 errorMessage = errorStream.await()
             )
@@ -92,14 +99,8 @@ class TrapServerService(
         return@withContext this
     }
 
-    private fun readStream(inputStream: InputStream) =
-        inputStream.bufferedReader().use { reader -> reader.readText() }
-
     data class ProcessResult(val exitCode: Int, val message: String, val errorMessage: String)
 
-    companion object {
-        fun getInstance(project: Project): TrapServerService {
-            return ServiceManager.getService(project, TrapServerService::class.java)
-        }
-    }
+    private fun readStream(inputStream: InputStream) =
+        inputStream.bufferedReader().use { reader -> reader.readText() }
 }

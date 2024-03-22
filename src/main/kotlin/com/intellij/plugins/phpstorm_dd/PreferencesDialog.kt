@@ -11,9 +11,6 @@ import javax.swing.JLabel
 import javax.swing.JPanel
 import javax.swing.JTextField
 
-/**
- * Preferences component.
- */
 class PreferencesDialog(
         project: Project?
 ) : DialogWrapper(project) {
@@ -22,7 +19,7 @@ class PreferencesDialog(
 
     override fun createCenterPanel(): JComponent? {
         val panel = JPanel(FlowLayout())
-        panel.add(JLabel("Http Port: "))
+        panel.add(JLabel("Port: "))
         val propertiesComponent = PropertiesComponent.getInstance()
         val httpPort = propertiesComponent.getInt(Preferences.HTTP_PORT_KEY, Preferences.HTTP_PORT_DEFAULT)
         portTextField = JTextField(httpPort.toString(), 6)
@@ -49,6 +46,6 @@ class PreferencesDialog(
 
     init {
         init()
-        title = "Proxy Preferences"
+        title = "Preferences"
     }
 }
