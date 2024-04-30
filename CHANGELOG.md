@@ -1,5 +1,9 @@
 <!-- Keep a Changelog guide -> https://keepachangelog.com -->
 
+# Buggregator Changelog
+
+## Unreleased
+
 ## 0.0.1
 
 ### Added
