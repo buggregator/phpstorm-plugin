@@ -1,3 +1,10 @@
+<p align="center">
+    <img alt="logo"
+         src="https://github.com/buggregator/phpstorm-plugin/blob/master/resources/logo.svg?raw=true"
+         style="width: 2in; display: block"
+    />
+</p>
+
 <h1 align="center">Buggregator IDEA Plugin</h1>
 
 <div align="center">
