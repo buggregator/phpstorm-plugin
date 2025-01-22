@@ -31,11 +31,17 @@ Everything is in front of you, and all the shortcuts work.
 
 ### Marketplace
 
-Go to the [Plugin homepage in the JetBrains Marketplace](https://plugins.jetbrains.com/plugin/26344-buggregator) and click the `Install` button.
+Go to the [Plugin homepage in the JetBrains Marketplace](https://plugins.jetbrains.com/plugin/26344-buggregator) and click the <kbd>Install to ...</kbd> button.
 
-### IDE Settings
+### IDE built-in plugin system
 
-To install the plugin from the IDE, go to IDEA settings → Plugins → Marketplace → Search for "Buggregator" → click `Install`.
+To install the plugin from the IDE built-in plugin system, go to IDEA <kbd>Settings</kbd> > <kbd>Plugins</kbd> > <kbd>Marketplace</kbd> > 🔍 Search for "Buggregator" > click <kbd>Install</kbd>.
+
+### Manual installation
+
+1. Download the latest release from the [Releases page](https://github.com/buggregator/phpstorm-plugin/releases) or from the [JetBrains Marketplace](https://plugins.jetbrains.com/plugin/26344-buggregator/versions).
+2. Go to IDEA <kbd>Settings</kbd> > <kbd>Plugins</kbd> > <kbd>⚙️</kbd> > <kbd>Install plugin from disk...</kbd>
+3. Select the downloaded `.jar` file and click <kbd>OK</kbd>.
 
 > [!IMPORTANT]
 > The IDE might ask you to restart it to apply the changes. After that, you can find the Buggregator button in the top right corner of the IDE window.
