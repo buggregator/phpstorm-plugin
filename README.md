@@ -48,5 +48,30 @@ To install the plugin from the IDE built-in plugin system, go to IDEA <kbd>Setti
 
 ## Overview
 
+### How it works:
+
+By default, when started, the plugin tries to run Trap from the vendor folder using the PHP interpreter set in the project settings.
+The parameters specified in the plugin settings are passed to Trap.
+
+![Options](resources/options.png)
+
+> [!NOTE]
+> Therefore:
+> - You need to have [`buggregator/trap`](https://github.com/buggregator/trap) installed in your project.
+> - You can change the PHP interpreter in the plugin settings if needed.
+> - You can change the path to Trap in the plugin settings.
+
+The plugin provides two channels for receiving information from Trap as separate tabs:
+- Web UI — an interactive Buggregator interface that opens in the IDE's built-in browser.
+- Terminal — displays information in text form.
+
+Trap opens the Web interface port specified in the settings, which works well with many clients.
+Click the <kbd>🌐</kbd> button on the toolbar to open the Web UI in the system browser.
+
+If you use the plugin in multiple running IDEs with the same port settings, both Web UIs will work with the same Trap.
+Another Trap instance will wait for the port to be free.
+
+## Future scope
+
 Currently, the plugin only works for launching [Buggregator Trap](https://github.com/buggregator/trap) from the vendor directory (or any other), but we are working on making it compatible with the [Buggregator server application](https://github.com/buggregator/server) as well.
 
