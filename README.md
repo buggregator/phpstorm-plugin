@@ -1,8 +1,10 @@
 <p align="center">
+    <a href="https://plugins.jetbrains.com/plugin/26344-buggregator" target="_blank">
     <img alt="logo"
          src="https://github.com/buggregator/phpstorm-plugin/blob/master/resources/logo.svg?raw=true"
          style="width: 2in; display: block"
     />
+    </a>
 </p>
 
 <h1 align="center">Buggregator IDEA Plugin</h1>
