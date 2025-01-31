@@ -1,0 +1,26 @@
+---
+
+on:  # yamllint disable-line rule:truthy
+  release:
+    types:
+      - published
+
+name: 📢 Broadcast release
+
+jobs:
+  notify-discord:
+    runs-on: ubuntu-latest
+    timeout-minutes: 4
+    steps:
+      - name: Check out the codebase
+        uses: actions/checkout@v4
+
+      - name: Notify Discord about release
+        uses: SethCohen/github-releases-to-discord@v1.15.0
+        with:
+          webhook_url: ${{ secrets.DISCORD_WEBHOOK_URL }}
+          color: '002ED2'
+          username: 'Buggregator IDEA Plugin release'
+          content: '||@here||'
+          footer_title: '⭐⭐⭐⭐⭐'
+          footer_timestamp: false
